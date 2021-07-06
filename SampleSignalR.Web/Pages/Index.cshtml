@@ -3,8 +3,50 @@
 @{
     ViewData["Title"] = "Home page";
 }
+<style>
+    .chat-users {
+        overflow-x: auto;
+        height: 800px;
+    }
+</style>
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+<div class="row">
+    <div class="col-8">
+        
+    </div>
+    <div class="col-3 chat-users" id="userArea">
+
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="~/lib/microsoft-signalr/signalr.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/chat")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.start().then(function () {
+            console.log("connection started");
+        }).catch(console.error);
+
+        connection.on("devices", function (activeDeviceResponse) {
+            $("#userArea").html("");
+            $.map(activeDeviceResponse, function (val, i) {
+                console.log(val)
+                console.log(i)
+
+                $("#userArea").append(`<span> ${i+1}) ${val} </span> </br>`);
+            })
+
+            console.log(activeDeviceResponse)
+        });
+
+    </script>
+}

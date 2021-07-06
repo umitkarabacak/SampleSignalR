@@ -17,7 +17,7 @@ namespace SampleSignalR.Web.Hubs
             _logger = logger;
         }
 
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             var connectionId = Context.ConnectionId;
 
@@ -26,24 +26,36 @@ namespace SampleSignalR.Web.Hubs
 
             _logger.LogInformation($"Connect new device, \nDevice connection Id is {connectionId}");
 
-            return base.OnConnectedAsync();
+            await SyncDeviceList();
+
+            await Task.FromResult(
+                base.OnConnectedAsync()
+            );
         }
 
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
             var connectionId = Context.ConnectionId;
             if (_connectionIds.Contains(connectionId))
                 _connectionIds.Remove(connectionId);
 
             _logger.LogInformation($"Disconnect device, connection Id is {connectionId}");
-            _logger.LogError($"Disconnect device, exception detail \t :{exception.Message} \n {exception.StackTrace}");
 
-            return base.OnConnectedAsync();
+            if (exception is not null)
+                _logger.LogError($"Disconnect device, exception detail \t :{exception.Message} \n {exception.StackTrace}");
+
+            await SyncDeviceList();
+
+            await Task.FromResult(
+                base.OnDisconnectedAsync(exception)
+            );
         }
 
         public async Task SyncDeviceList()
         {
+            _logger.LogDebug(string.Join(", ", _connectionIds));
+
             await Clients.All.SendAsync("devices", _connectionIds);
         }
     }
