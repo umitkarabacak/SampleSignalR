@@ -15,10 +15,10 @@
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 <div class="row">
-    <div class="col-8">
+    <div class="col-7">
         
     </div>
-    <div class="col-3 chat-users" id="userArea">
+    <div class="col-5 chat-users" id="userArea">
 
     </div>
 </div>
@@ -37,15 +37,16 @@
         }).catch(console.error);
 
         connection.on("devices", function (activeDeviceResponse) {
+            console.log(activeDeviceResponse)
             $("#userArea").html("");
             $.map(activeDeviceResponse, function (val, i) {
-                console.log(val)
-                console.log(i)
-
-                $("#userArea").append(`<span> ${i+1}) ${val} </span> </br>`);
-            })
-
-            console.log(activeDeviceResponse)
+                $("#userArea").append(`<div class="row mb-2">
+                                            <div class="col-1">${i + 1})</div>
+                                            <div class="col-6">${val}</div>
+                                            <div class="col-2"><button class="btn btn-sm btn-danger">X</button></div>
+                                        </div>
+                                      `);
+            }) ;
         });
 
     </script>

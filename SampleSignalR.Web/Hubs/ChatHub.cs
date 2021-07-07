@@ -26,7 +26,7 @@ namespace SampleSignalR.Web.Hubs
 
             _logger.LogInformation($"Connect new device, \nDevice connection Id is {connectionId}");
 
-            await SyncDeviceList();
+            await Clients.All.SendAsync("devices", _connectionIds);
 
             await Task.FromResult(
                 base.OnConnectedAsync()
@@ -45,7 +45,7 @@ namespace SampleSignalR.Web.Hubs
             if (exception is not null)
                 _logger.LogError($"Disconnect device, exception detail \t :{exception.Message} \n {exception.StackTrace}");
 
-            await SyncDeviceList();
+            await Clients.All.SendAsync("devices", _connectionIds);
 
             await Task.FromResult(
                 base.OnDisconnectedAsync(exception)
