@@ -44,7 +44,44 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/microsoft-signalr/signalr.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/chat")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
 
+        connection.start().then(function () {
+            console.log("connection started");
+        }).catch(console.error);
+
+        connection.on("devices", function (activeDeviceResponse) {
+            console.log(activeDeviceResponse)
+            $("#userArea").html("");
+            $.map(activeDeviceResponse, function (val, i) {
+                $("#userArea").append(`<div class="row mb-2">
+                                            <div class="col-1">${i + 1})</div>
+                                            <div class="col-6">${val}</div>
+                                            <div class="col-2">
+                                                <button type="button" onclick="kickUser('${val}');"
+                                                        class="btn btn-sm btn-danger ${val === connection.connectionId ? 'd-none' : ''}">
+                                                    X
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `);
+            });
+        });
+
+        connection.on("kick", function (connectionId) {
+            if (connectionId === connection.connectionId)
+                window.location.href = '/privacy';
+        });
+
+        function kickUser(userConnectionId) {
+            connection.invoke("KickUserWithConnectionId", userConnectionId);
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
