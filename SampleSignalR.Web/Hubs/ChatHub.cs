@@ -58,5 +58,10 @@ namespace SampleSignalR.Web.Hubs
 
             await Clients.All.SendAsync("devices", _connectionIds);
         }
+
+        public async Task KickUserWithConnectionId(string userConnectionId)
+        {
+            await Clients.All.SendAsync("kick", userConnectionId);
+        }
     }
 }
