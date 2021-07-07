@@ -75,7 +75,7 @@
 
         connection.on("kick", function (connectionId) {
             if (connectionId === connection.connectionId)
-                window.location.href = '/privacy';
+                window.location.href = '/logout';
         });
 
         function kickUser(userConnectionId) {
